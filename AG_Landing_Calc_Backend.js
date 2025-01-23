@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Use dynamic port if specified, fallback to 3000
 
 // Middleware
 app.use(bodyParser.json());
@@ -15,8 +15,16 @@ app.use(bodyParser.json());
 // OpenAI API Configuration
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
+if (!OPENAI_API_KEY) {
+  console.error('Error: OPENAI_API_KEY is not set. Ensure it is defined in the environment variables.');
+  process.exit(1); // Exit the application if the API key is missing
+}
+
 app.post('/calculate-revenue', async (req, res) => {
   const { region, size } = req.body;
+
+  // Debugging log
+  console.log('Received request:', { region, size });
 
   // GPT prompt
   const prompt = `
@@ -36,9 +44,9 @@ app.post('/calculate-revenue', async (req, res) => {
   try {
     // Call OpenAI API
     const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions', // Chat endpoint
+      'https://api.openai.com/v1/chat/completions',
       {
-        model: 'gpt-4', // Use 'gpt-4' or 'gpt-3.5-turbo'
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: 'You are a helpful assistant.' },
           { role: 'user', content: prompt }
@@ -55,12 +63,15 @@ app.post('/calculate-revenue', async (req, res) => {
 
     // Extract GPT response and send it back to the frontend
     const gptResponse = response.data.choices[0].message.content.trim();
+    console.log('GPT Response:', gptResponse); // Debugging log for GPT response
     res.json({ result: gptResponse });
   } catch (error) {
     console.error('Error with OpenAI API:', error.message);
+
     if (error.response) {
-      console.error('Error response data:', error.response.data); // Logs specific error details from OpenAI
+      console.error('Error response data:', error.response.data); // Logs detailed error response from OpenAI
     }
+
     res.status(500).json({ error: 'Failed to calculate revenue. Please try again.' });
   }
 });
