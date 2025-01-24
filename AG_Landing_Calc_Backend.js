@@ -1,50 +1,59 @@
 console.log('Backend file is starting...');
 
-require('dotenv').config(); // Load environment variables from .env file
-
+require('dotenv').config(); // Load environment variables
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // Import CORS middleware
+const cors = require('cors');
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Use dynamic port if specified, fallback to 3000
+const PORT = process.env.PORT || 3000;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors()); // Enable CORS for all routes
+app.use(cors());
 
-// OpenAI API Configuration
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+// Load Knowledge Documents
+const regionSOCData = fs.readFileSync(path.resolve(__dirname, 'region_SOC_database.json'), 'utf-8');
+const leversData = fs.readFileSync(path.resolve(__dirname, 'lever_database.json'), 'utf-8');
 
-if (!OPENAI_API_KEY) {
-  console.error('Error: OPENAI_API_KEY is not set. Ensure it is defined in the environment variables.');
-  process.exit(1); // Exit the application if the API key is missing
-}
+// Parse JSON files
+const regionSOC = JSON.parse(regionSOCData);
+const levers = JSON.parse(leversData);
 
 app.post('/calculate-revenue', async (req, res) => {
-  const { region, size } = req.body;
+  const { region, farmTypes, selectedLevers, farmSize } = req.body;
 
-  // Debugging log
-  console.log('Received request:', { region, size });
-
-  if (!region || !size) {
-    return res.status(400).json({ error: 'Missing region or size in the request body.' });
+  if (!region || !farmTypes || !selectedLevers || !farmSize) {
+    return res.status(400).json({ error: 'All fields are required: region, farm types, selected levers, and farm size.' });
   }
 
-  // GPT prompt
+  // Build the GPT prompt
   const prompt = `
-    You are a carbon credit revenue calculator.
-    Given the following farm details:
+    This GPT specializes in estimating the current Soil Organic Carbon (SOC) content for farms and calculating financial returns from selling Carbon Credits (CCs).
+    The input data:
     - Region: ${region}
-    - Size: ${size} hectares
-    Estimate:
-    - Total carbon sequestration potential (in tCO2).
-    - Revenue based on €25/tCO2.
-    Return the response in this format:
-    "Region: {region}
-    Total Sequestration Potential: {value} tCO2
-    Estimated Revenue: €{value}."
+    - Farm Types: ${farmTypes.join(', ')}
+    - Selected Practices: ${selectedLevers.join(', ')}
+    - Farm Size: ${farmSize} hectares
+    
+    Using the region SOC data:
+    ${JSON.stringify(regionSOC)}
+
+    And available levers for improving SOC:
+    ${JSON.stringify(levers)}
+
+    Calculate the total yearly carbon sequestration per hectare and apply the formula:
+    total yearly carbon sequestration per hectare * 50 to calculate the yearly revenue per hectare from selling carbon credits.
+    Use the minimal revenue figure for a conservative estimate.
+
+    Output:
+    - Yearly revenue per hectare
+    - Total yearly revenue for the farm
+    - Guidance on optimizing SOC improvements and financial outcomes
   `;
 
   try {
@@ -57,7 +66,7 @@ app.post('/calculate-revenue', async (req, res) => {
           { role: 'system', content: 'You are a helpful assistant.' },
           { role: 'user', content: prompt }
         ],
-        max_tokens: 150,
+        max_tokens: 500,
       },
       {
         headers: {
@@ -67,15 +76,14 @@ app.post('/calculate-revenue', async (req, res) => {
       }
     );
 
-    // Extract GPT response and send it back to the frontend
+    // Extract GPT response
     const gptResponse = response.data.choices[0].message.content.trim();
-    console.log('GPT Response:', gptResponse); // Debugging log for GPT response
     res.json({ result: gptResponse });
   } catch (error) {
     console.error('Error with OpenAI API:', error.message);
 
     if (error.response) {
-      console.error('Error response data:', error.response.data); // Logs detailed error response from OpenAI
+      console.error('Error response data:', error.response.data);
     }
 
     res.status(500).json({ error: 'Failed to calculate revenue. Please try again.' });
