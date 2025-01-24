@@ -4,6 +4,7 @@ require('dotenv').config(); // Load environment variables from .env file
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors'); // Import CORS middleware
 const axios = require('axios');
 
 const app = express();
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 3000; // Use dynamic port if specified, fallbac
 
 // Middleware
 app.use(bodyParser.json());
+app.use(cors()); // Enable CORS for all routes
 
 // OpenAI API Configuration
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -25,6 +27,10 @@ app.post('/calculate-revenue', async (req, res) => {
 
   // Debugging log
   console.log('Received request:', { region, size });
+
+  if (!region || !size) {
+    return res.status(400).json({ error: 'Missing region or size in the request body.' });
+  }
 
   // GPT prompt
   const prompt = `
@@ -80,4 +86,5 @@ app.post('/calculate-revenue', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
 
