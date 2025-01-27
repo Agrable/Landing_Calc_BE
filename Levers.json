@@ -1,0 +1,74 @@
+{
+  "AgricultureArable": [
+    {
+      "practice": "Application de Biochar",
+      "description": "Incorporation de biochar dans les sols pour augmenter le stockage du carbone.",
+      "PCC": "Up to 5.0 tCO₂e/ha (one-time, depending on application rate)",
+      "cost": "€200 to €800/ha (one-time)",
+      "implementation_time": "1 year (for application)",
+      "CCL": "50 to 100 years (biochar remains stable in the soil)",
+      "CCDR": 1,
+      "CCDR_reason": "Very low risk as biochar is stable once applied"
+    },
+    {
+      "practice": "Agroforesterie",
+      "description": "Intégration des arbres dans les terres arables pour séquestrer du carbone supplémentaire dans la biomasse et le sol.",
+      "PCC": "1.0 to 3.0 tCO₂e/ha/year",
+      "cost": "€500 to €2,000/ha (initial setup)",
+      "implementation_time": "3 to 5 years (for full establishment)",
+      "CCL": "20 to 100 years (depending on tree species and management)",
+      "CCDR": 4,
+      "CCDR_reason": "Risk due to long-term establishment and tree survival"
+    },
+    {
+      "practice": "Cover Crops",
+      "description": "Cultures couvertes : Utilisation de cultures de couverture pendant les périodes de jachère pour augmenter l'apport de carbone dans les sols et prévenir l'érosion.",
+      "PCC": "0.5 to 2.0 tCO₂e/ha/year",
+      "cost": "€80 to €200/year",
+      "implementation_time": "3 to 6 months (growing season)",
+      "CCL": "Annual (requires yearly implementation)",
+      "CCDR": 3,
+      "CCDR_reason": "Moderate risk due to variability in crop management"
+    },
+    {
+      "practice": "No-Till",
+      "description": "Réduit la perturbation du sol, préserve le carbone organique du sol (COS) et améliore la séquestration du carbone.",
+      "PCC": "0.3 to 1.0 tCO₂e/ha/year",
+      "cost": "€50 to €150/year",
+      "implementation_time": "Immediate (start of cropping season)",
+      "CCL": "Continuous (as long as no-till practices are maintained)",
+      "CCDR": 2,
+      "CCDR_reason": "Low risk of failure if practices are maintained"
+    },
+    {
+      "practice": "Rotation des Cultures",
+      "description": "Diversification des cultures pour améliorer la santé du sol et augmenter le COS.",
+      "PCC": "0.2 to 0.5 tCO₂e/ha/year",
+      "cost": "€50 to €100/year",
+      "implementation_time": "1 to 3 years (depending on rotation cycle)",
+      "CCL": "Multi-year (varies with rotation cycle)",
+      "CCDR": 2,
+      "CCDR_reason": "Low risk as rotation practices are well-established"
+    },
+    {
+      "practice": "Réduction des Engrais",
+      "description": "Diminution de l'application d'azote pour réduire les émissions de protoxyde d'azote, un puissant GES.",
+      "PCC": "0.2 to 0.5 tCO₂e/ha/year",
+      "cost": "Savings of €50 to €100/year",
+      "implementation_time": "Immediate",
+      "CCL": "Continuous (as long as practices are maintained)",
+      "CCDR": 2,
+      "CCDR_reason": "Low risk due to ease of implementation"
+    },
+    {
+      "practice": "Agriculture de Précision",
+      "description": "Optimisation de l'utilisation des intrants (par exemple, les engrais) pour minimiser les émissions de gaz à effet de serre (GES).",
+      "PCC": "0.1 to 0.3 tCO₂e/ha/year",
+      "cost": "€50 to €150/year",
+      "implementation_time": "1 year (equipment setup)",
+      "CCL": "Continuous (as long as technology is maintained)",
+      "CCDR": 3,
+      "CCDR_reason": "Moderate risk tied to technology dependence"
+    }
+  ]
+}
